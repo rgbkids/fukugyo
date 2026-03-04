@@ -1,8 +1,12 @@
 # fukugyo データディレクトリ（個人情報を含むため除外）
 .fukugyo/
-.agents/
-.claude/
-skills-lock.json
+
+# 契約書ファイル（個人情報を含むため除外）
+contracts/*.pdf
+contracts/*.txt
+contracts/*.docx
+contracts/*.md
+!contracts/.gitkeep
 
 # Python
 __pycache__/
@@ -18,3 +22,9 @@ venv/
 # エディタ
 .vscode/
 .idea/
+
+# Claude
+.agents/
+.claude/
+.mcp.json
+skills-lock.json

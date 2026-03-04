@@ -99,11 +99,27 @@ def fetch_slack_times(
 def chrome_history_path() -> Path:
     system = platform.system()
     if system == "Darwin":
-        return Path.home() / "Library/Application Support/Google/Chrome/Default/History"
+        base = Path.home() / "Library/Application Support/Google/Chrome"
     elif system == "Windows":
-        return Path(os.environ["LOCALAPPDATA"]) / "Google/Chrome/User Data/Default/History"
+        base = Path(os.environ["LOCALAPPDATA"]) / "Google/Chrome/User Data"
     else:
-        return Path.home() / ".config/google-chrome/Default/History"
+        base = Path.home() / ".config/google-chrome"
+
+    # Default を最初に試す
+    default = base / "Default" / "History"
+    if default.exists():
+        return default
+
+    # Default がなければ最終更新が最も新しいプロファイルを使う
+    candidates = sorted(
+        base.glob("Profile */History"),
+        key=lambda p: p.stat().st_mtime,
+        reverse=True,
+    )
+    if candidates:
+        return candidates[0]
+
+    return default  # 存在しなくても元のパスを返してエラーを出す
 
 
 def fetch_chrome_history(target_date: date) -> list[dict]:
@@ -256,7 +272,7 @@ def _pick_time(
 
 # ---- メイン処理 -----------------------------------------------------------
 
-def run_timecard(target_date: date, dry_run: bool = False) -> None:
+def run_timecard(target_date: date, dry_run: bool = False, yes: bool = False) -> None:
     config       = load_config()
     url_patterns = config.get("url_patterns", [])
 
@@ -334,7 +350,10 @@ def run_timecard(target_date: date, dry_run: bool = False) -> None:
         return
 
     print()
-    answer = input("この内容で保存しますか？ [y/n/修正(e)]: ").strip().lower()
+    if yes:
+        answer = "y"
+    else:
+        answer = input("この内容で保存しますか？ [y/n/修正(e)]: ").strip().lower()
     if answer == "e":
         entries = interactive_fix(entries)
         answer = "y"
@@ -453,13 +472,16 @@ def main():
 
     p = sub.add_parser("today",     help="今日の勤怠を取得・保存")
     p.add_argument("--dry-run", action="store_true")
+    p.add_argument("--yes", "-y", action="store_true", help="確認をスキップして保存")
 
     p = sub.add_parser("yesterday", help="昨日の勤怠を取得・保存")
     p.add_argument("--dry-run", action="store_true")
+    p.add_argument("--yes", "-y", action="store_true", help="確認をスキップして保存")
 
     p = sub.add_parser("date",      help="指定日の勤怠を取得・保存（YYYY-MM-DD）")
     p.add_argument("date_str")
     p.add_argument("--dry-run", action="store_true")
+    p.add_argument("--yes", "-y", action="store_true", help="確認をスキップして保存")
 
     sub.add_parser("week",          help="今週の集計を表示（保存なし）")
 
@@ -469,11 +491,11 @@ def main():
     args = parser.parse_args()
 
     if args.cmd in ("today", None):
-        run_timecard(date.today(), dry_run=getattr(args, "dry_run", False))
+        run_timecard(date.today(), dry_run=getattr(args, "dry_run", False), yes=getattr(args, "yes", False))
     elif args.cmd == "yesterday":
-        run_timecard(date.today() - timedelta(days=1), dry_run=args.dry_run)
+        run_timecard(date.today() - timedelta(days=1), dry_run=args.dry_run, yes=args.yes)
     elif args.cmd == "date":
-        run_timecard(date.fromisoformat(args.date_str), dry_run=args.dry_run)
+        run_timecard(date.fromisoformat(args.date_str), dry_run=args.dry_run, yes=args.yes)
     elif args.cmd == "week":
         today  = date.today()
         monday = today - timedelta(days=today.weekday())

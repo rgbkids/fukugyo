@@ -87,7 +87,7 @@ npx skills add rgbkids/fukugyo -a claude-code
 Claude Code を開いて、以下を入力してください：
 
 ```
-/fukugyo/fukugyo-setup
+/fukugyo-setup
 ```
 
 質問が順番に出てくるので、答えていくだけです。
@@ -127,7 +127,7 @@ Claude Code を開いて、以下を入力してください：
 ### ＜毎日＞ 今日の稼働を記録する
 
 ```
-/fukugyo/fukugyo-timecard
+/fukugyo-timecard
 ```
 
 これだけです。
@@ -161,17 +161,17 @@ Slackを使っていなくても、Chromeの閲覧履歴から作業時間を推
 
 先方から受け取った契約書（PDF）があれば、そのまま渡すだけでAIが読み解いてくれます。
 
-ファイル名は会社ごとに分けて管理するのがおすすめです：
+契約書は `contracts/` フォルダに置いてください（`.gitignore` 設定済みで git には含まれません）：
 
 ```
-📁 任意のフォルダ
+📁 contracts/          ← このプロジェクトフォルダ内
 ├── 株式会社A契約書.pdf
 ├── 株式会社B業務委託契約書.pdf
 └── 株式会社C_NDA.pdf
 ```
 
 ```
-/fukugyo/fukugyo-contract 株式会社A契約書.pdf
+/fukugyo-contract contracts/株式会社A契約書.pdf
 ```
 
 AIが自動で以下を読み取ってくれます：
@@ -184,9 +184,6 @@ AIが自動で以下を読み取ってくれます：
 
 読み取った内容は保存されて、請求書の発行にも自動で使われます。
 
-```
-/fukugyo/fukugyo-contract-sync 株式会社A   # 読み取った単価を請求書設定に反映
-```
 
 ---
 
@@ -195,7 +192,7 @@ AIが自動で以下を読み取ってくれます：
 **ステップ1：今月の稼働をまとめる**
 
 ```
-/fukugyo/fukugyo-timecard-month
+/fukugyo-timecard-month
 ```
 
 クライアントごとに「今月○○時間」とまとめてくれます。
@@ -203,7 +200,7 @@ AIが自動で以下を読み取ってくれます：
 **ステップ2：請求書を発行する**
 
 ```
-/fukugyo/fukugyo-invoice
+/fukugyo-invoice
 ```
 
 先月分の請求書が自動で作られます。インボイス登録番号があれば「適格請求書」として出力されます。
@@ -212,7 +209,7 @@ AIが自動で以下を読み取ってくれます：
 特定の月を指定したい場合：
 
 ```
-/fukugyo/fukugyo-invoice 2026-03
+/fukugyo-invoice 2026-03
 ```
 
 ---
@@ -220,7 +217,7 @@ AIが自動で以下を読み取ってくれます：
 ### ＜支払期日を過ぎたとき＞ 入金確認・督促
 
 ```
-/fukugyo/fukugyo-payment
+/fukugyo-payment
 ```
 
 実行すると最初に「ブラウザで口座を確認しますか？」と聞いてきます。`y` を押すと、あらかじめ設定したネットバンクやfreeeのログイン画面が自動で開きます。
@@ -252,7 +249,7 @@ AIが自動で以下を読み取ってくれます：
 口座を確認して入金されていたら：
 
 ```
-/fukugyo/fukugyo-payment-paid INV-2026-03-001
+/fukugyo-payment-paid INV-2026-03-001
 ```
 
 まだ入金されていなければ、督促メールの文面を生成します。督促は3段階で状況に合わせて文面が変わります：
@@ -268,7 +265,7 @@ AIが自動で以下を読み取ってくれます：
 3回督促しても無視される場合は、法的手続きに進めます。
 
 ```
-/fukugyo/fukugyo-escalate INV-2026-03-001
+/fukugyo-escalate INV-2026-03-001
 ```
 
 実行すると、状況を診断して2つの選択肢を費用込みで提示してくれます：
@@ -329,19 +326,28 @@ Slackと連携すると、朝「おはようございます」と投稿するだ
 
 **ステップ2：権限を設定する**
 
-左メニューの「OAuth & Permissions」を開き、「Bot Token Scopes」に以下の4つを追加：
+左メニューの「OAuth & Permissions」を開き、「Bot Token Scopes」に以下を追加：
 
-- `channels:history`
-- `groups:history`
-- `channels:read`
-- `groups:read`
+| スコープ | 用途 |
+|---------|------|
+| `channels:history` | パブリックチャンネルの投稿を読む |
+| `groups:history` | プライベートチャンネルの投稿を読む |
+| `mpim:history` | グループDMの投稿を読む |
+| `im:history` | ダイレクトメッセージを読む |
+| `channels:read` | チャンネル一覧を取得する |
+| `groups:read` | プライベートチャンネル一覧を取得する |
 
-**ステップ3：ワークスペースにインストールする**
+> ⚠️ **スコープを変更した後は必ず再インストールが必要です。**
+> スコープを追加しただけでは反映されません。必ずステップ3の「Reinstall to Workspace」を行ってください。
 
-「Install to Workspace」ボタンをクリック → 権限を許可する。
+**ステップ3：ワークスペースにインストール（または再インストール）する**
+
+「Install to Workspace」または「Reinstall to Workspace」ボタンをクリック → 権限を許可する。
 表示される **Bot User OAuth Token**（`xoxb-` で始まる長い文字列）をコピーしてください。
 
 > 🔒 このトークンは次のステップで書きます。他の人に見せないでください。
+>
+> ℹ️ スコープを変更するたびに新しいトークンが発行されます。`.mcp.json` のトークンも忘れずに更新してください。
 
 **ステップ4：Botをチャンネルに招待する**
 
@@ -351,9 +357,9 @@ Slackと連携すると、朝「おはようございます」と投稿するだ
 /invite @fukugyo-bot
 ```
 
-**ステップ5：Claude Code の設定ファイルに書く**
+**ステップ5：MCP の設定ファイルに書く**
 
-`~/.claude/settings.json` というファイルをテキストエディタで開き、以下を追記します：
+fukugyo のプロジェクトフォルダにある `.mcp.json` を開いて（なければ作成して）、以下を記述します：
 
 ```json
 {
@@ -369,6 +375,9 @@ Slackと連携すると、朝「おはようございます」と投稿するだ
   }
 }
 ```
+
+> 💡 `.mcp.json` はプロジェクト単位の設定ファイルです。このプロジェクトフォルダで Claude Code を起動すると自動で読み込まれます。
+> 全プロジェクト共通にしたい場合は `~/.claude/settings.json` に同じ内容を書いてもOKです。
 
 `SLACK_TEAM_ID` の調べ方：Slackでワークスペース名をクリック →「設定と管理」→「ワークスペースの設定」→ URLに含まれる `T` から始まるIDです。
 
@@ -389,6 +398,21 @@ Slackと連携すると、朝「おはようございます」と投稿するだ
 `my_user_id` の調べ方：Slackで自分のアイコンをクリック →「プロフィール」→「…（その他）」→「メンバーIDをコピー」
 
 チャンネルIDの調べ方：チャンネル名を右クリック →「チャンネル詳細を表示」→ 一番下に表示
+
+---
+
+## Slack 連携のトラブルシューティング
+
+| エラー | 原因 | 対処 |
+|--------|------|------|
+| `invalid_auth` | トークンが無効または期限切れ | Slack API で Bot Token を再確認・再生成 |
+| `missing_scope` | 必要な権限がない | ステップ2のスコープを追加 → **Reinstall to Workspace** → `.mcp.json` のトークンを更新 |
+| `channel_not_found` | Bot がチャンネルに未参加 | チャンネルで `/invite @fukugyo-bot` を実行 |
+| データが取得できない | Slack MCP は接続済みだがメッセージなし | `checkin_keywords` / `checkout_keywords` の設定を確認 |
+
+> ⚠️ **よくある落とし穴：スコープ追加後の再インストール忘れ**
+> OAuth & Permissions でスコープを追加しても、「Reinstall to Workspace」を押さないと新しいスコープは有効になりません。
+> 再インストール後は新しいトークンが発行されるので、`.mcp.json` のトークンも必ず更新してください。
 
 ---
 

@@ -97,8 +97,13 @@ def read_contract_text(filepath: str) -> str:
     """契約書ファイルを読み込む（txt / md / pdf対応）"""
     p = Path(filepath)
     if not p.exists():
-        print(f"❌ ファイルが見つかりません: {filepath}")
-        sys.exit(1)
+        # contracts/ フォルダを自動補完
+        fallback = Path("contracts") / p.name
+        if fallback.exists():
+            p = fallback
+        else:
+            print(f"❌ ファイルが見つかりません: {filepath}")
+            sys.exit(1)
 
     if p.suffix.lower() == ".pdf":
         # pdfminer がインストールされている場合のみ対応
@@ -297,7 +302,7 @@ def _print_summary(data: dict) -> None:
 
 # ---- sync コマンド -------------------------------------------------------
 
-def run_sync(client: str) -> None:
+def run_sync(client: str, yes: bool = False) -> None:
     """
     契約書から抽出した報酬情報を config.json の clients セクションに反映する
     """
@@ -329,7 +334,10 @@ def run_sync(client: str) -> None:
         old = existing.get(k, "（未設定）")
         print(f"  {k}: {old} → {v}")
 
-    ans = input("\n  反映しますか？ [Y/n]: ").strip().lower()
+    if yes:
+        ans = "y"
+    else:
+        ans = input("\n  反映しますか？ [Y/n]: ").strip().lower()
     if ans == "n":
         print("キャンセルしました。")
         return
@@ -361,6 +369,7 @@ def main():
 
     p = sub.add_parser("sync",  help="抽出した報酬・支払条件をconfig.jsonに反映")
     p.add_argument("client",    help="クライアント名")
+    p.add_argument("--yes", "-y", action="store_true", help="確認をスキップして反映")
 
     args = parser.parse_args()
 
@@ -371,7 +380,7 @@ def main():
     elif args.cmd == "show":
         run_show(args.client)
     elif args.cmd == "sync":
-        run_sync(args.client)
+        run_sync(args.client, yes=args.yes)
     else:
         parser.print_help()
 
