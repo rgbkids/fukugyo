@@ -60,7 +60,12 @@ Mac には最初から入っています。表示されない場合は https://w
 ターミナルで以下を実行してください：
 
 ```bash
-npx skills add rgbkids/fukugyo -a claude-code
+npx skills add vteacher-online/fukugyo -a claude-code
+npx skills add vteacher-online/fukugyo/skills/contract -a claude-code
+npx skills add vteacher-online/fukugyo/skills/escalate -a claude-code
+npx skills add vteacher-online/fukugyo/skills/invoice -a claude-code
+npx skills add vteacher-online/fukugyo/skills/payment -a claude-code
+npx skills add vteacher-online/fukugyo/skills/timecard -a claude-code
 ```
 
 > 💡 `npx` が「コマンドが見つかりません」と言われたら、Node.js のインストールが必要です。
@@ -71,7 +76,7 @@ npx skills add rgbkids/fukugyo -a claude-code
 Claude Code を開いて、以下を入力してください：
 
 ```
-/fukugyo-setup
+/fukugyo/fukugyo-setup
 ```
 
 質問が順番に出てくるので、答えていくだけです。
