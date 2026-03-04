@@ -87,7 +87,7 @@ npx skills add rgbkids/fukugyo -a claude-code
 Claude Code を開いて、以下を入力してください：
 
 ```
-/fukugyo-setup
+/fukugyo/fukugyo-setup
 ```
 
 質問が順番に出てくるので、答えていくだけです。
@@ -127,7 +127,7 @@ Claude Code を開いて、以下を入力してください：
 ### ＜毎日＞ 今日の稼働を記録する
 
 ```
-/fukugyo-timecard
+/fukugyo/fukugyo-timecard
 ```
 
 これだけです。
@@ -171,7 +171,7 @@ Slackを使っていなくても、Chromeの閲覧履歴から作業時間を推
 ```
 
 ```
-/fukugyo-contract 株式会社A契約書.pdf
+/fukugyo/fukugyo-contract 株式会社A契約書.pdf
 ```
 
 AIが自動で以下を読み取ってくれます：
@@ -185,7 +185,7 @@ AIが自動で以下を読み取ってくれます：
 読み取った内容は保存されて、請求書の発行にも自動で使われます。
 
 ```
-/fukugyo-contract-sync 株式会社A   # 読み取った単価を請求書設定に反映
+/fukugyo/fukugyo-contract-sync 株式会社A   # 読み取った単価を請求書設定に反映
 ```
 
 ---
@@ -195,7 +195,7 @@ AIが自動で以下を読み取ってくれます：
 **ステップ1：今月の稼働をまとめる**
 
 ```
-/fukugyo-timecard-month
+/fukugyo/fukugyo-timecard-month
 ```
 
 クライアントごとに「今月○○時間」とまとめてくれます。
@@ -203,7 +203,7 @@ AIが自動で以下を読み取ってくれます：
 **ステップ2：請求書を発行する**
 
 ```
-/fukugyo-invoice
+/fukugyo/fukugyo-invoice
 ```
 
 先月分の請求書が自動で作られます。インボイス登録番号があれば「適格請求書」として出力されます。
@@ -212,7 +212,7 @@ AIが自動で以下を読み取ってくれます：
 特定の月を指定したい場合：
 
 ```
-/fukugyo-invoice 2026-03
+/fukugyo/fukugyo-invoice 2026-03
 ```
 
 ---
@@ -220,7 +220,7 @@ AIが自動で以下を読み取ってくれます：
 ### ＜支払期日を過ぎたとき＞ 入金確認・督促
 
 ```
-/fukugyo-payment
+/fukugyo/fukugyo-payment
 ```
 
 実行すると最初に「ブラウザで口座を確認しますか？」と聞いてきます。`y` を押すと、あらかじめ設定したネットバンクやfreeeのログイン画面が自動で開きます。
@@ -252,7 +252,7 @@ AIが自動で以下を読み取ってくれます：
 口座を確認して入金されていたら：
 
 ```
-/fukugyo-payment-paid INV-2026-03-001
+/fukugyo/fukugyo-payment-paid INV-2026-03-001
 ```
 
 まだ入金されていなければ、督促メールの文面を生成します。督促は3段階で状況に合わせて文面が変わります：
@@ -268,7 +268,7 @@ AIが自動で以下を読み取ってくれます：
 3回督促しても無視される場合は、法的手続きに進めます。
 
 ```
-/fukugyo-escalate INV-2026-03-001
+/fukugyo/fukugyo-escalate INV-2026-03-001
 ```
 
 実行すると、状況を診断して2つの選択肢を費用込みで提示してくれます：

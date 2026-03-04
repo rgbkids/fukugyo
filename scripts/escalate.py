@@ -12,6 +12,8 @@ fukugyo escalate
 
 import json
 import sys
+from __future__ import annotations
+
 import argparse
 import webbrowser
 from datetime import date, timedelta

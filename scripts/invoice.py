@@ -13,6 +13,8 @@ freee MCP連携:
   このスクリプトはMCP未接続時のMarkdownフォールバックを担当する。
 """
 
+from __future__ import annotations
+
 import argparse
 import json
 import sys

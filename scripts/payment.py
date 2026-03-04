@@ -4,6 +4,8 @@ fukugyo payment
 請求書の入金状況を管理し、督促メールを生成する
 """
 
+from __future__ import annotations
+
 import argparse
 import webbrowser
 import json

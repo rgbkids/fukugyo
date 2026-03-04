@@ -20,6 +20,8 @@ Slack MCP（Claude Code経由）+ Chrome履歴 から勤怠を自動生成する
   config.json には書きません。
 """
 
+from __future__ import annotations
+
 import argparse
 import json
 import os
@@ -29,7 +31,10 @@ import sqlite3
 import sys
 from datetime import date, datetime, timedelta
 from pathlib import Path
-from zoneinfo import ZoneInfo
+try:
+    from zoneinfo import ZoneInfo
+except ImportError:
+    from backports.zoneinfo import ZoneInfo
 
 # ---- 設定 ----------------------------------------------------------------
 
